@@ -16,10 +16,6 @@ import imgGenreList from './views/imgGenreList.vue';
 import txtDataList from './views/txtDataList.vue';
 import txtGenreList from './views/txtGenreList.vue';
 
-import addData from './views/addData.vue';
-import dataList from './views/dataList.vue';
-import addGenre from './views/addGenre.vue';
-import genreList from './views/genreList.vue';
 import userList from './views/userList.vue';
 import manage from './views/manage.vue';
 import home from './views/home.vue';

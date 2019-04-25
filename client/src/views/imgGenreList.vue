@@ -1,3 +1,11 @@
 <template>
-    <h1>11</h1>
+  <genreList :type="0"/>
 </template>
+<script>
+import genreList from "./genreList";
+export default {
+  components: {
+    genreList
+  }
+};
+</script>

@@ -4,7 +4,7 @@
     <div class="table_container">
       <el-row style="margin-top: 20px;">
         <el-col :span="14" :offset="4">
-          <header class="form_header">添加书本</header>
+          <header class="form_header">{{title}}</header>
           <el-form
             :model="ruleForm"
             :rules="rules"
@@ -12,10 +12,10 @@
             label-width="110px"
             class="form food_form"
           >
-            <el-form-item label="书名" prop="name">
+            <el-form-item label="数据名称" prop="name">
               <el-input v-model="ruleForm.name" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="描述" prop="desc">
+            <el-form-item label="数据描述" prop="desc">
               <el-input v-model="ruleForm.desc"></el-input>
             </el-form-item>
             <el-form-item label="数据分类" prop="genre">
@@ -29,7 +29,6 @@
               </el-select>
             </el-form-item>
             <el-form-item label="上传数据文件" prop="filepath">
-              <!-- <el-input v-model="ruleForm.filepath"></el-input> -->
               <el-upload
                 ref="upload"
                 action="http://localhost:3000/posts/img"
@@ -48,6 +47,9 @@
                 <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
               </el-upload>
             </el-form-item>
+            <el-form-item label="数据价格" prop="price">
+              <el-input v-model.number="ruleForm.price"></el-input>
+            </el-form-item>
             <el-form-item>
               <el-row type="flex" justify="center">
                 <el-button type="primary" @click="onSubmit('ruleForm')">创建数据</el-button>
@@ -61,10 +63,7 @@
 </template>
 <script>
 export default {
-  props: {
-    type: Number,
-    required: true
-  },
+  props: { type: { type: Number, required: true } },
   data() {
     return {
       genreList: [],
@@ -87,35 +86,62 @@ export default {
   },
   deactivated() {
     // console.log("1111");
-    if (this.ruleForm.filepath !== "") {
-        
-    }
+    this.removeUploadFile();
+    this.resetForm("ruleForm");
+    this.$refs.upload.clearFiles();
+  },
+  activated() {
+    this.initData();
   },
   created() {
-    // this.initData();
+    this.initData();
+  },
+  computed: {
+    title() {
+      switch (this.type) {
+        case 0:
+          return "添加图片数据";
+          break;
+        case 1:
+          return "添加文本数据";
+          break;
+        default:
+          break;
+      }
+    }
   },
   methods: {
+    async removeUploadFile() {
+      if (this.ruleForm.filepath !== "") {
+        let data = await this.$fetch("posts/remove", {
+          method: "POST",
+          body: JSON.stringify({
+            filepath: this.ruleForm.filepath
+          })
+        });
+      }
+    },
     async initData() {
       this.loading = true;
       let genreList = await this.$fetch("genre/list");
-      let bookshelfList = await this.$fetch("bookshelf/list");
+      // let bookshelfList = await this.$fetch("bookshelf/list");
       this.genreList = genreList.data;
-      this.bookshelfList = bookshelfList.data;
+      // this.bookshelfList = bookshelfList.data;
       this.loading = false;
     },
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.createBook();
+          this.create();
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    async createBook() {
-      // console.log(JSON.stringify(this.ruleForm));
-      let data = await this.$fetch("book/create", {
+    async create() {
+      this.ruleForm.type = this.type;
+      let data = await this.$fetch("data/create", {
         method: "POST",
         body: JSON.stringify(this.ruleForm)
       });
@@ -128,11 +154,12 @@ export default {
       } else {
         this.$message({
           showClose: true,
-          message: "创建书本成功",
+          message: "创建种类成功",
           type: "success"
         });
         this.resetForm("ruleForm");
-        this.$router.push({ path: "/bookList" });
+        if (this.type === 0) this.$router.push({ path: "/imgDataList" });
+        else if (this.type === 1) this.$router.push({ path: "/txtDataList" });
       }
     },
     resetForm(formName) {

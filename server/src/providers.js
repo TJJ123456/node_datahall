@@ -16,3 +16,6 @@ export const BorrowList = modelFactory(collectionFactory('borrowlist', idIndex))
 //种类表
 export const Genres = modelFactory(collectionFactory('genres', idIndex))
 
+//数据表
+export const Datas = modelFactory(collectionFactory('datas', idIndex))
+

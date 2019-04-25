@@ -4,6 +4,8 @@ import genreRoute from './routes/genreRoute';
 import planRoute from './routes/genreRoute222';
 import userRoute from './routes/userRoute';
 import uploadRoute from './routes/uploadRoute';
+import dataRoute from './routes/dataRoute';
+
 
 function privateRoute(req, res, next) {
   if (!req.user) {
@@ -26,6 +28,7 @@ export default function (app) {
   // app.use('/plan', planRoute);
   app.use('/user', userRoute);
   app.use('/posts', uploadRoute);
+  app.use('/data', dataRoute);
 
   app.get('/manager1', (req, res) => {
     if (!req.session.manager) {
