@@ -11,18 +11,18 @@
               <i class="el-icon-document"></i>图像数据
             </template>
             <el-menu-item index="addImgData">添加数据</el-menu-item>
-            <el-menu-item index="addImgGenre">添加种类</el-menu-item>
+            <el-menu-item index="addImgGenre">添加分类</el-menu-item>
             <el-menu-item index="imgDataList">数据列表</el-menu-item>
-            <el-menu-item index="imgGenreList">种类列表</el-menu-item>
+            <el-menu-item index="imgGenreList">分类列表</el-menu-item>
           </el-submenu>
           <el-submenu index="3">
             <template slot="title">
               <i class="el-icon-document"></i>文本数据
             </template>
             <el-menu-item index="addTxtData">添加数据</el-menu-item>
-            <el-menu-item index="addTxtGenre">添加种类</el-menu-item>
+            <el-menu-item index="addTxtGenre">添加分类</el-menu-item>
             <el-menu-item index="txtDataList">数据列表</el-menu-item>
-            <el-menu-item index="txtGenreList">种类列表</el-menu-item>
+            <el-menu-item index="txtGenreList">分类列表</el-menu-item>
           </el-submenu>
           <el-submenu index="4">
             <template slot="title">

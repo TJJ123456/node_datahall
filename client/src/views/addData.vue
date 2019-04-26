@@ -44,7 +44,7 @@
                   type="success"
                   @click="submitUpload"
                 >上传到服务器</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10m</div>
               </el-upload>
             </el-form-item>
             <el-form-item label="数据价格" prop="price">
@@ -125,7 +125,7 @@ export default {
       this.loading = true;
       let genreList = await this.$fetch("genre/list");
       // let bookshelfList = await this.$fetch("bookshelf/list");
-      this.genreList = genreList.data;
+      this.genreList = genreList.data.filter(item => item.type === this.type);
       // this.bookshelfList = bookshelfList.data;
       this.loading = false;
     },
@@ -172,16 +172,32 @@ export default {
           file.type === "image/jpg" ||
           file.type === "image/png" ||
           file.type === "image/jpeg";
-        const isLt2M = file.size / 1024 / 1024 < 10;
-        console.log(isJPGorPng);
+        const isLt10M = file.size / 1024 / 1024 < 10;
         if (!isJPGorPng) {
           this.$message.error("上传图片只能是 JPG/jpeg/png 格式!");
         }
         if (!isLt2M) {
           this.$message.error("上传图片大小不能超过 10MB!");
         }
-        return isJPGorPng && isLt2M;
+        return isJPGorPng && isLt10M;
+      } else if (this.type === 1) {
+        const isDoc =
+          file.type === "text/plain" ||
+          file.type === "application/msword" ||
+          file.type ===
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+        const limit = file.size / 1024 / 1024 < 10;
+        if (!isDoc) {
+          this.$message.error("上传文本只能是 txt/doc/docx 格式!");
+        }
+        if (!limit) {
+          this.$message.error("上传文本大小不能超过 10MB!");
+        }
+        return isDoc && limit;
       }
+
+      return false;
     },
     uploadSuccess(res, file) {
       this.ruleForm.filepath = res.filepath;

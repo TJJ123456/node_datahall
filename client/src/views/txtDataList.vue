@@ -1,3 +1,11 @@
 <template>
-    <h1>11</h1>
+  <dataList :type="1"/>
 </template>
+<script>
+import dataList from "./dataList";
+export default {
+  components: {
+    dataList
+  }
+};
+</script>

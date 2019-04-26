@@ -25,12 +25,47 @@
       </div>
       <el-dialog title="修改种类信息" :visible.sync="dialogFormVisible">
         <el-form :rules="dialogFormrules" :model="dialogForm" ref="dialogForm">
-          <el-form-item label="名称" prop="name">
+          <el-form-item label="数据名称" prop="name">
             <el-input v-model="dialogForm.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="数据描述" prop="desc">
+            <el-input v-model="dialogForm.desc"></el-input>
+          </el-form-item>
+          <el-form-item label="数据分类" prop="genre">
+            <el-select v-model="dialogForm.genre" placeholder="请选择数据分类">
+              <el-option
+                v-for="(item, index) in genreList"
+                :key="index"
+                :label="item.name"
+                :value="item._id"
+              >{{item.name}}</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="更换数据文件（可选）">
+            <el-upload
+              ref="upload"
+              action="http://localhost:3000/posts/img"
+              :auto-upload="false"
+              :before-upload="beforeUpload"
+              :on-success="uploadSuccess"
+              :limit="1"
+            >
+              <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+              <el-button
+                style="margin-left: 10px;"
+                size="small"
+                type="success"
+                @click="submitUpload"
+              >上传到服务器</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10m</div>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="数据价格" prop="price">
+            <el-input v-model.number="dialogForm.price"></el-input>
           </el-form-item>
           <el-form-item>
             <el-row type="flex" justify="center">
-              <el-button type="primary" @click="onSubmit('dialogForm')">提交修改</el-button>
+              <el-button type="primary" @click="onSubmit('ruleForm')">创建数据</el-button>
             </el-row>
           </el-form-item>
         </el-form>
@@ -40,6 +75,7 @@
 </template>
 <script>
 export default {
+  props: { type: { type: Number, required: true } },
   data() {
     return {
       editIndex: 0,
@@ -48,11 +84,17 @@ export default {
       limit: 10,
       count: 0,
       tableData: [],
+      genreList: [],
       dialogFormVisible: false,
       loading: false,
+      dialogFormSelect: 0,
       dialogForm: {},
       dialogFormrules: {
-        name: [{ required: true, message: "请输入数据名称", trigger: "blur" }]
+        name: [{ required: true, message: "请输入数据名称", trigger: "blur" }],
+        desc: [{ required: true, message: "请输入数据描述", trigger: "blur" }],
+        genre: [{ required: true, message: "选择数据类型", trigger: "blur" }],
+        price: [{ required: true, message: "输入价格", trigger: "blur" }],
+        filepath: [{ required: true, message: "请上传文件", trigger: "blur" }]
       }
     };
   },
@@ -64,8 +106,14 @@ export default {
   },
   watch: {},
   methods: {
+    getGenreName(id) {
+      let doc = this.tableData.find(item => item._id === id);
+      return doc.name;
+    },
     async initData() {
       // this.getList();
+      let genreList = await this.$fetch("genre/list");
+      this.genreList = genreList.data;
       this.GetListCount();
     },
     async GetListCount() {
@@ -83,12 +131,18 @@ export default {
           offset: this.offset
         })
       });
-      this.tableData = data.data;
+      this.tableData = data.data.filter(item => item.type === this.type);
     },
     handleEdit(index, row) {
       this.editIndex = index;
       this.dialogFormVisible = true;
       this.dialogForm = JSON.parse(JSON.stringify(this.tableData[index]));
+      let genre = this.dialogForm.genre;
+      console.log("种类", genre);
+      this.dialogFormSelect = this.tableData.find(item => {
+        console.log(item._id, genre, item._id === genre);
+        return item._id === genre;
+      });
     },
     async handleDelete(index, row) {
       let data = await this.$fetch("data/delete", {
@@ -126,6 +180,34 @@ export default {
           return false;
         }
       });
+    },
+    beforeUpload(file) {
+      if (this.type === 0) {
+        console.log(file.type);
+        const isJPGorPng =
+          file.type === "image/jpg" ||
+          file.type === "image/png" ||
+          file.type === "image/jpeg";
+        const isLt2M = file.size / 1024 / 1024 < 10;
+        console.log(isJPGorPng);
+        if (!isJPGorPng) {
+          this.$message.error("上传图片只能是 JPG/jpeg/png 格式!");
+        }
+        if (!isLt2M) {
+          this.$message.error("上传图片大小不能超过 10MB!");
+        }
+        return isJPGorPng && isLt2M;
+      } else if (this.type === 1) {
+        console.log(file.type);
+      }
+      return false;
+    },
+    uploadSuccess(res, file) {
+      this.dialogForm.filepath = res.filepath;
+      //   console.log(res, file);
+    },
+    submitUpload() {
+      this.$refs.upload.submit();
     },
     async changeItem() {
       let data = await this.$fetch("data/change", {

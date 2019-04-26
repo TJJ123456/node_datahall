@@ -1,4 +1,4 @@
-import { Genres, Books } from '../providers'
+import { Genres, Datas } from '../providers'
 import express from 'express'
 const route = express.Router();
 
@@ -37,8 +37,9 @@ route.get('/list', async (req, res, next) => {
     try {
         let data = await Genres.find({});
         for (let i = 0; i < data.length; ++i) {
-            console.log(data[i]._id);
-            data[i].bookList = await Books.find({ "genre": data[i]._id })
+            // console.log(data[i]._id);
+            data[i].dataList = await Datas.find({ "genre": data[i]._id });
+            // data[i].bookList = await Datas.find({ "genre": data[i]._id })
         }
         res.json({
             data: data
@@ -54,11 +55,7 @@ route.post('/list', async (req, res, next) => {
     try {
         let data = await Genres.find({}, { limit: limit, skip: offset });
         for (let i = 0; i < data.length; ++i) {
-            console.log(data[i]._id);
-            data[i].bookList = await Books.find({ genre: data[i]._id })
-            let tmp = await Books.find({});
-            console.log(tmp);
-            console.log(data[i].bookList);
+            data[i].dataList = await Datas.find({ "genre": data[i]._id });
         }
         res.json({
             data: data
@@ -72,7 +69,7 @@ route.post('/delete', async (req, res, next) => {
     const id = req.body.id;
     try {
         let data = await Genres.removeOne({ _id: id });
-        let tmp = await Books.update({ 'genre': id }, { $pull: { 'genre': id } })
+        let tmp = await Datas.update({ 'genre': id }, { $pull: { 'genre': id } })
         res.json({ status: 'ok' })
     } catch (e) {
         res.status(405).send(e.message);

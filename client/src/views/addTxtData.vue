@@ -1,3 +1,11 @@
 <template>
-    <h1>11</h1>
+  <addData :type="1"/>
 </template>
+<script>
+import addData from "./addData";
+export default {
+  components: {
+    addData
+  }
+};
+</script>

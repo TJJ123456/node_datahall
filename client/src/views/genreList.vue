@@ -4,7 +4,7 @@
     <div class="table_container">
       <el-table v-loading="loading" :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="分类名称"></el-table-column>
-        <el-table-column prop="bookList.length" label="数据数量"></el-table-column>
+        <el-table-column prop="dataList.length" label="数据数量"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -82,7 +82,7 @@ export default {
           offset: this.offset
         })
       });
-      this.tableData = data.data;
+      this.tableData = data.data.filter(item => item.type === this.type);
     },
     handleEdit(index, row) {
       this.editIndex = index;

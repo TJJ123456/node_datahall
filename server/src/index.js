@@ -4,6 +4,7 @@ import express from 'express'
 import session from 'express-session'
 import cors from 'cors'
 import uuid from 'uuid/v4'
+import path from 'path'
 
 import routes from './routes'
 
@@ -35,6 +36,9 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
   },
 }))
+
+console.log(__dirname);
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 routes(app)
 

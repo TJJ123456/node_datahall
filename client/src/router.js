@@ -22,7 +22,6 @@ import home from './views/home.vue';
 
 import userhome from './userviews/userhome.vue';
 import userLayout from './userviews/userLayout.vue';
-import userPlanList from './userviews/userPlanList.vue';
 import userLogin from './userviews/login.vue';
 import myOrder from './userviews/myOrder.vue';
 
@@ -33,11 +32,6 @@ const routes = [
             path: '/',
             name: 'userindex',
             component: userhome,
-            meta: [],
-        },
-        {
-            path: '/home/userPlanList',
-            component: userPlanList,
             meta: [],
         },
         {
