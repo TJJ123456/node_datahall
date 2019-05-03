@@ -1,8 +1,14 @@
 <template>
-  <div>
-    <el-row style="margin-top: 20px;">
+  <div class="fillcontain">
+    <el-row style="margin-top: 150px;">
       <el-col :span="14" :offset="4">
-        <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
+        <el-tabs
+          :stretch="true"
+          tab-position="bottom"
+          v-model="activeName2"
+          type="card"
+          @tab-click="handleClick"
+        >
           <el-tab-pane label="登陆" name="first"></el-tab-pane>
           <el-tab-pane label="注册" name="second"></el-tab-pane>
         </el-tabs>
@@ -80,7 +86,7 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      if (tab.index === '0') {
+      if (tab.index === "0") {
         this.mode = "login";
       } else {
         this.mode = "signup";
@@ -180,5 +186,9 @@ export default {
 .form_header {
   text-align: center;
   margin-bottom: 10px;
+}
+.fillcontain {
+  height: 100%;
+  width: 100%;
 }
 </style>

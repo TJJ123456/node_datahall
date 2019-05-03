@@ -31,6 +31,9 @@
           <el-form-item label="数据描述" prop="desc">
             <el-input v-model="dialogForm.desc"></el-input>
           </el-form-item>
+          <el-form-item label="关键字" prop="keyword">
+            <el-input v-model="dialogForm.keyword"></el-input>
+          </el-form-item>
           <el-form-item label="数据分类" prop="genre">
             <el-select v-model="dialogForm.genre" placeholder="请选择数据分类">
               <el-option
@@ -65,7 +68,7 @@
           </el-form-item>
           <el-form-item>
             <el-row type="flex" justify="center">
-              <el-button type="primary" @click="onSubmit('ruleForm')">创建数据</el-button>
+              <el-button type="primary" @click="onSubmit('ruleForm')">修改数据</el-button>
             </el-row>
           </el-form-item>
         </el-form>
@@ -94,6 +97,7 @@ export default {
         desc: [{ required: true, message: "请输入数据描述", trigger: "blur" }],
         genre: [{ required: true, message: "选择数据类型", trigger: "blur" }],
         price: [{ required: true, message: "输入价格", trigger: "blur" }],
+        keyword: [{ required: true, message: "输入关键字", trigger: "blur" }],
         filepath: [{ required: true, message: "请上传文件", trigger: "blur" }]
       }
     };

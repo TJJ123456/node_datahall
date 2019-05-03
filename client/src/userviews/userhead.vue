@@ -6,6 +6,12 @@
           <router-link :to="{name: 'userindex'}">数据所</router-link>
         </div>
       </el-col>
+      <el-col :span="4" :offset="3">
+        <div class="head-logo">
+          <router-link v-if="$state.user" :to="{name: '/userindex'}">{{$state.user.username}}</router-link>
+          <router-link v-else :to="{path: '/login'}">登陆</router-link>
+        </div>
+      </el-col>
       <div class="search">
         <el-input class="searchInput" placeholder="请输入搜索内容"></el-input>
         <el-button class="searchBtn" icon="el-icon-search">搜索</el-button>

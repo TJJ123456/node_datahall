@@ -5,12 +5,14 @@
         <li>
           <span>图像数据</span>
           <em>
+            <a>不限</a>
             <a @click="test(index)" v-for="(item, index) in imgGenreList" :key="index">{{item.name}}</a>
           </em>
         </li>
         <li>
           <span>文本数据</span>
           <em>
+            <a>不限</a>
             <a @click="test(index)" v-for="(item, index) in txtGenreList" :key="index">{{item.name}}</a>
           </em>
         </li>

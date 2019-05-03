@@ -35,16 +35,17 @@ const routes = [
             meta: [],
         },
         {
-            path: '/home/login',
-            component: userLogin,
-            meta: [],
-        },
-        {
             path: '/home/myOrder',
             component: myOrder,
             meta: [],
         },
         ]
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: userLogin,
+        meta: [],
     },
     { path: '/managerlogin', name: 'managerlogin', component: mangerLogin },
     {
