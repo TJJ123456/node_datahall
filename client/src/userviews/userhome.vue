@@ -30,8 +30,8 @@ export default {
         return this.dataList.filter(item => item.type === 1);
       }
       return this.dataList.filter(item => {
-        console.log(item.genre, this.genreSelectId);
-        item.genre === this.genreSelectId;
+        console.log(item.genre, this.genreSelectId, );
+        return item.genre === this.genreSelectId;
       });
     }
   },

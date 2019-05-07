@@ -29,6 +29,11 @@
               <i class="el-icon-document"></i>用户管理
             </template>
             <el-menu-item index="userList">用户列表</el-menu-item>
+          </el-submenu><el-submenu index="5">
+            <template slot="title">
+              <i class="el-icon-document"></i>订单管理
+            </template>
+            <el-menu-item index="orderList">订单列表</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-col>

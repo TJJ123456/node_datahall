@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row class="head">
+    <el-row class="head" :class="{shorthead: checkMyView}">
       <el-col :span="16" :offset="1">
         <div class="head-logo">
           <router-link :to="{name: 'userindex'}">数据所</router-link>
@@ -8,11 +8,11 @@
       </el-col>
       <el-col :span="4" :offset="3">
         <div class="head-logo">
-          <router-link v-if="$state.user" :to="{name: '/userindex'}">{{$state.user.username}}</router-link>
+          <router-link v-if="$state.user" :to="{path: '/home/myOrder'}">{{$state.user.username}}</router-link>
           <router-link v-else :to="{path: '/login'}">登陆</router-link>
         </div>
       </el-col>
-      <div class="search">
+      <div class="search" v-if="!checkMyView">
         <el-input class="searchInput" :value="keyword" v-model="keyword" placeholder="请输入搜索内容"></el-input>
         <el-button class="searchBtn" @click="toSearch()" icon="el-icon-search">搜索</el-button>
       </div>
@@ -23,14 +23,21 @@
 export default {
   data() {
     return {
-      keyword: ""
+      keyword: "",
+      loading: false
     };
+  },
+  computed: {
+    checkMyView() {
+      return this.$route.path === "/home/myOrder";
+    }
   },
   methods: {
     test() {
       // console.log("111");
       this.$router.push({ path: "/home/login" });
     },
+
     async logout() {
       await this.$fetch("user/logout");
       this.$state.user = false;
@@ -99,5 +106,8 @@ export default {
   top: -40px;
   left: 310px;
   width: 90px;
+}
+.shorthead {
+  height: 100px;
 }
 </style>

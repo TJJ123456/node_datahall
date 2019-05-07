@@ -21,7 +21,8 @@
             <p class="p2" id="datatag">{{item.keyword}}</p>
             <p class="p3" id="datainfo">{{item.desc}}</p>
             <p class="p4">
-              <a>我要购买</a>
+              <a v-if="checkBuy">获取数据</a>
+              <a v-else @click="buy(item)">我要购买</a>
             </p>
           </div>
         </div>
@@ -75,6 +76,17 @@
         </div>
       </div>
     </div>
+    <el-dialog title="购买数据" :visible.sync="dialogFormVisible">
+      <p class="p2">
+        <span>数据名称: {{item.name}}</span>
+      </p>
+      <p class="p2">
+        <span>数据价格: {{item.price}}</span>
+      </p>
+      <p class="p3">
+        <input @click="confirmBuy()" type="button" class="zxtc_btn" value="确定购买">
+      </p>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -86,7 +98,9 @@ export default {
   },
   data() {
     return {
-      item: {}
+      item: {},
+      mylist: [],
+      dialogFormVisible: false
     };
   },
   created() {
@@ -94,6 +108,11 @@ export default {
   },
   activated() {
     this.initData();
+  },
+  computed: {
+    checkBuy() {
+      return this.mylist.find(item => item.dataid === this.id);
+    }
   },
   methods: {
     async initData() {
@@ -104,6 +123,49 @@ export default {
         })
       });
       this.item = data.data;
+      this.getuserlist();
+    },
+    async getuserlist() {
+      if (this.$state.user) {
+        let data = await this.$fetch("order/userlist");
+        if (data.err) {
+          if (data.msg === "请登录") {
+            this.$router.replace("/login", "");
+          }
+        } else {
+          this.mylist = data.data;
+        }
+      }
+    },
+    buy(item) {
+      this.dialogFormVisible = true;
+    },
+    async confirmBuy() {
+      let data = await this.$fetch("order/create", {
+        method: "POST",
+        body: JSON.stringify({
+          dataid: this.id,
+          price: this.item.price
+        })
+      });
+      if (data.err) {
+        if (data.msg === "请登录") {
+          this.$router.replace("/login", "");
+        }
+        this.$message({
+          showClose: true,
+          message: data.msg,
+          type: "error"
+        });
+      } else {
+        this.$message({
+          showClose: true,
+          message: "购买成功",
+          type: "success"
+        });
+        this.getuserlist();
+        this.dialogFormVisible = false;
+      }
     }
   }
 };
@@ -409,6 +471,47 @@ tbody {
   padding: 10px;
   text-align: left;
   vertical-align: top;
+}
+
+p.p3 {
+  text-align: center;
+  margin-top: 40px;
+}
+p {
+  width: 90%;
+  overflow: hidden;
+  margin: 0px auto;
+  padding: 0px;
+}
+p {
+  margin: 0px;
+  padding: 0px;
+  line-height: 20px;
+}
+
+p.p3 input {
+  border: 0px;
+  cursor: pointer;
+  height: 40px;
+  padding: 0px 40px;
+  background-color: #f5a21b;
+  border: 0px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #fff;
+  border-radius: 20px;
+}
+
+input,
+select,
+textarea {
+  font-family: "Microsoft Yahei";
+  outline: none;
+}
+
+p.p2 {
+  line-height: 35px;
+  margin-top: 10px;
 }
 </style>
 

@@ -17,6 +17,7 @@ import txtDataList from './views/txtDataList.vue';
 import txtGenreList from './views/txtGenreList.vue';
 
 import userList from './views/userList.vue';
+import orderList from './views/orderList.vue';
 import manage from './views/manage.vue';
 import home from './views/home.vue';
 
@@ -120,6 +121,12 @@ const routes = [
             component: userList,
             props: true,
             meta: ['用户管理', '用户列表'],
+        },
+        {
+            path: '/orderList',
+            component: orderList,
+            props: true,
+            meta: ['订单管理', '订单列表'],
         },]
     },
 

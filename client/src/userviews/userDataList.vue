@@ -18,24 +18,67 @@
             </em>
             <em class="em2">
               <span class="sp1">
-                <el-button class="btn" @click="toDetail(item._id)" round>我要购买</el-button>
+                <el-button class="btn" @click="buy(item)" round>我要购买</el-button>
               </span>
             </em>
           </div>
         </li>
       </ul>
     </div>
+    <el-dialog title="购买数据" :visible.sync="dialogFormVisible">
+      <p class="p2">
+        <span>数据名称: {{buyItem.name}}</span>
+      </p>
+      <p class="p2">
+        <span>数据价格: {{buyItem.price}}</span>
+      </p>
+      <p class="p3">
+        <input @click="confirmBuy()" type="button" class="zxtc_btn" value="确定购买">
+      </p>
+    </el-dialog>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
+      dialogFormVisible: false,
+      buyItem: {}
     };
   },
   methods: {
     toDetail(id) {
       this.$router.push({ name: "detail", params: { id: id } });
+    },
+    buy(item) {
+      this.dialogFormVisible = true;
+      this.buyItem = item;
+    },
+    async confirmBuy() {
+      let data = await this.$fetch("order/create", {
+        method: "POST",
+        body: JSON.stringify({
+          dataid: this.buyItem._id,
+          price: this.buyItem.price
+        })
+      });
+      if (data.err) {
+        if (data.msg === "请登录") {
+          this.$router.replace("/login", "");
+        }
+        this.$message({
+          showClose: true,
+          message: data.msg,
+          type: "error"
+        });
+      } else {
+        this.$message({
+          showClose: true,
+          message: "购买成功",
+          type: "success"
+        });
+        this.dialogFormVisible = false;
+      }
     }
   },
   props: {
@@ -186,6 +229,47 @@ img {
 .kfsj_05 ul li:hover .btn {
   background-color: #eb991e;
   color: white;
+}
+
+p.p3 {
+  text-align: center;
+  margin-top: 40px;
+}
+p {
+  width: 90%;
+  overflow: hidden;
+  margin: 0px auto;
+  padding: 0px;
+}
+p {
+  margin: 0px;
+  padding: 0px;
+  line-height: 20px;
+}
+
+p.p3 input {
+  border: 0px;
+  cursor: pointer;
+  height: 40px;
+  padding: 0px 40px;
+  background-color: #f5a21b;
+  border: 0px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #fff;
+  border-radius: 20px;
+}
+
+input,
+select,
+textarea {
+  font-family: "Microsoft Yahei";
+  outline: none;
+}
+
+p.p2 {
+  line-height: 35px;
+  margin-top: 10px;
 }
 </style>
 

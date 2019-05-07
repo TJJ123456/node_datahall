@@ -2,6 +2,7 @@ import genreRoute from './routes/genreRoute';
 import userRoute from './routes/userRoute';
 import uploadRoute from './routes/uploadRoute';
 import dataRoute from './routes/dataRoute';
+import orderRoute from './routes/orderRoute';
 
 
 function privateRoute(req, res, next) {
@@ -24,6 +25,7 @@ export default function (app) {
   app.use('/user', userRoute);
   app.use('/posts', uploadRoute);
   app.use('/data', dataRoute);
+  app.use('/order', orderRoute);
 
   app.get('/manager1', (req, res) => {
     if (!req.session.manager) {
