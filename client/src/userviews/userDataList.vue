@@ -9,7 +9,7 @@
           <div class="fr">
             <em class="em1">
               <span class="sp1">
-                <a>{{item.name}}</a>
+                <a @click="toDetail(item._id)">{{item.name}}</a>
               </span>
               <span class="sp2">{{item.desc}}</span>
               <span class="sp3">
@@ -18,7 +18,7 @@
             </em>
             <em class="em2">
               <span class="sp1">
-                <el-button round>我要购买</el-button>
+                <el-button class="btn" @click="toDetail(item._id)" round>我要购买</el-button>
               </span>
             </em>
           </div>
@@ -31,26 +31,21 @@
 export default {
   data() {
     return {
-      dataList: []
     };
   },
-  created() {
-    this.initData();
-  },
-  activated() {
-    this.initData();
-  },
   methods: {
-    async initData() {
-      // this.getList();
-      let data = await this.$fetch("data/list");
-      this.dataList = data.data;
-      // this.GetListCount();
+    toDetail(id) {
+      this.$router.push({ name: "detail", params: { id: id } });
+    }
+  },
+  props: {
+    dataList: {
+      require: true
     }
   }
 };
 </script>
-<style scoped>
+<style lang="less" scoped>
 .kfsj_05 {
   overflow: hidden;
 }
@@ -89,7 +84,7 @@ ul {
   background-color: #fff;
   -moz-box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.04);
   -webkit-box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.04);
-  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.04);
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
 }
 
 .kfsj_05 ul li .fl {
@@ -137,6 +132,9 @@ li {
   font-size: 20px;
   color: #333;
   line-height: 40px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .kfsj_05 ul li .fr em.em1 span.sp2 {
@@ -183,6 +181,11 @@ img {
 .kfsj_05 ul li .fr em.em2 {
   width: 120px;
   position: relative;
+}
+
+.kfsj_05 ul li:hover .btn {
+  background-color: #eb991e;
+  color: white;
 }
 </style>
 

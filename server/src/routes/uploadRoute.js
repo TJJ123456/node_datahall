@@ -21,16 +21,17 @@ route.post('/img', multer({ dest: 'src/public/upload' }).single('file'), (req, r
     } else if (file.mimetype === 'image/jpeg') {
         fs.renameSync(file.path, file.path + '.jpeg')
         filename = file.path + '.jpeg';
-    }else if (file.mimetype === 'text/plain') {
+    } else if (file.mimetype === 'text/plain') {
         fs.renameSync(file.path, file.path + '.txt')
         filename = file.path + '.txt';
-    }else if (file.mimetype === 'application/msword') {
+    } else if (file.mimetype === 'application/msword') {
         fs.renameSync(file.path, file.path + '.doc')
         filename = file.path + '.doc';
-    }else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         fs.renameSync(file.path, file.path + '.docx')
         filename = file.path + '.docx';
     }
+    filename = filename.slice(4);
     res.json({
         filepath: filename
     });

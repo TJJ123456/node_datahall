@@ -1,22 +1,34 @@
 <template>
-  <div class="genreNav">
-    <div class="wrap_c">
-      <ul>
-        <li>
-          <span>图像数据</span>
-          <em>
-            <a>不限</a>
-            <a @click="test(index)" v-for="(item, index) in imgGenreList" :key="index">{{item.name}}</a>
-          </em>
-        </li>
-        <li>
-          <span>文本数据</span>
-          <em>
-            <a>不限</a>
-            <a @click="test(index)" v-for="(item, index) in txtGenreList" :key="index">{{item.name}}</a>
-          </em>
-        </li>
-      </ul>
+  <div>
+    <div class="genreNav">
+      <div class="wrap_c">
+        <ul>
+          <li>
+            <span>图像数据</span>
+            <em>
+              <a :class="{select: selectId === 0}" @click="setSelectId(0)">不限</a>
+              <a
+                @click="setSelectId(item._id)"
+                :class="{select: selectId === item._id}"
+                v-for="(item, index) in imgGenreList"
+                :key="index"
+              >{{item.name}}</a>
+            </em>
+          </li>
+          <li>
+            <span>文本数据</span>
+            <em>
+              <a :class="{select: selectId === 1}" @click="setSelectId(1)">不限</a>
+              <a
+                @click="setSelectId(item._id)"
+                :class="{select: selectId === item._id}"
+                v-for="(item, index) in txtGenreList"
+                :key="index"
+              >{{item.name}}</a>
+            </em>
+          </li>
+        </ul>
+      </div>
     </div>
     <div class="tab">
       <div class="wrap_c">
@@ -32,6 +44,7 @@
 export default {
   data() {
     return {
+      selectId: 999,
       genreList: []
     };
   },
@@ -50,11 +63,15 @@ export default {
   },
   methods: {
     async initData() {
-      let data = await this.$fetch("data/list");
+      let data = await this.$fetch("genre/list");
       this.genreList = data.data;
     },
     test(index) {
       console.log(index);
+    },
+    setSelectId(id) {
+      this.selectId = id;
+      this.$emit("changeSelect", id);
     }
   }
 };
@@ -149,5 +166,9 @@ a:-webkit-any-link {
   position: absolute;
   left: 0px;
   bottom: -52px;
+}
+
+.genreNav ul li em a.select {
+  color: #f5a21b;
 }
 </style>

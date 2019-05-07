@@ -9,7 +9,6 @@ async function getByname(name) {
 route.post('/create', async (req, res, next) => {
     try {
         const food = await getByname(req.body.name);
-        console.log(food);
         if (food) {
             throw new Error('已有同名的数据');
         }
@@ -17,6 +16,18 @@ route.post('/create', async (req, res, next) => {
         res.json({ status: 'ok' })
     } catch (e) {
         console.log(e.message);
+        res.status(405).send(e.message);
+    }
+})
+
+route.post('/data', async (req, res, next) => {
+    const id = req.body.id;
+    try {
+        let data = await Datas.findOne({ _id: id });
+        res.json({
+            data: data
+        });
+    } catch (e) {
         res.status(405).send(e.message);
     }
 })
@@ -36,9 +47,6 @@ route.get('/count', async (req, res, next) => {
 route.get('/list', async (req, res, next) => {
     try {
         let data = await Datas.find({});
-        for (let i = 0; i < data.length; ++i) {
-            console.log(data[i]._id);
-        }
         res.json({
             data: data
         });

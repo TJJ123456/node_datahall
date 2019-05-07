@@ -36,6 +36,9 @@ export default {
         message: "退出成功",
         type: "success"
       });
+    },
+    banByDetail() {
+      return this.$route.name !== "detail";
     }
   }
 };

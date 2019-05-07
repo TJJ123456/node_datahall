@@ -1,0 +1,4 @@
+Devenv.exe /SafeMode
+Devenv.exe /ResetSettings
+Devenv.exe /ResetAddin
+Devenv.exe /ResetSkipPkgs

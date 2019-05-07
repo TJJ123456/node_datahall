@@ -24,6 +24,7 @@ import userhome from './userviews/userhome.vue';
 import userLayout from './userviews/userLayout.vue';
 import userLogin from './userviews/login.vue';
 import myOrder from './userviews/myOrder.vue';
+import dataDetail from './userviews/dataDetail.vue';
 
 const routes = [
     {
@@ -38,6 +39,12 @@ const routes = [
             path: '/home/myOrder',
             component: myOrder,
             meta: [],
+        },
+        {
+            path: '/home/dataDetail/:id',
+            name: 'detail',
+            component: dataDetail,
+            props: true
         },
         ]
     },

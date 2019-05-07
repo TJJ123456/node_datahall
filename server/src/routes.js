@@ -1,7 +1,4 @@
-import bookRoute from './routes/bookRoute';
-import bookshelfRoute from './routes/bookshelfRoute';
 import genreRoute from './routes/genreRoute';
-import planRoute from './routes/genreRoute222';
 import userRoute from './routes/userRoute';
 import uploadRoute from './routes/uploadRoute';
 import dataRoute from './routes/dataRoute';
@@ -22,8 +19,6 @@ function sendManagerInfo(req, res) {
 }
 
 export default function (app) {
-  app.use('/book', bookRoute);
-  app.use('/bookshelf', bookshelfRoute);
   app.use('/genre', genreRoute);
   // app.use('/plan', planRoute);
   app.use('/user', userRoute);
