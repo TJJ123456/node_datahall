@@ -25,6 +25,7 @@ import userLayout from './userviews/userLayout.vue';
 import userLogin from './userviews/login.vue';
 import myOrder from './userviews/myOrder.vue';
 import dataDetail from './userviews/dataDetail.vue';
+import searchview from './userviews/searchview.vue';
 
 const routes = [
     {
@@ -44,6 +45,12 @@ const routes = [
             path: '/home/dataDetail/:id',
             name: 'detail',
             component: dataDetail,
+            props: true
+        },
+        {
+            path: '/home/search/:keyword',
+            name: 'search',
+            component: searchview,
             props: true
         },
         ]

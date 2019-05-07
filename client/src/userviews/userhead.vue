@@ -13,14 +13,19 @@
         </div>
       </el-col>
       <div class="search">
-        <el-input class="searchInput" placeholder="请输入搜索内容"></el-input>
-        <el-button class="searchBtn" icon="el-icon-search">搜索</el-button>
+        <el-input class="searchInput" :value="keyword" v-model="keyword" placeholder="请输入搜索内容"></el-input>
+        <el-button class="searchBtn" @click="toSearch()" icon="el-icon-search">搜索</el-button>
       </div>
     </el-row>
   </div>
 </template>
 <script>
 export default {
+  data() {
+    return {
+      keyword: ""
+    };
+  },
   methods: {
     test() {
       // console.log("111");
@@ -39,6 +44,21 @@ export default {
     },
     banByDetail() {
       return this.$route.name !== "detail";
+    },
+    toSearch() {
+      if (this.keyword === "") {
+        return;
+      }
+      if (this.$route.name === "search") {
+        this.$router.replace({
+          name: "search",
+          params: { keyword: this.keyword }
+        });
+      } else
+        this.$router.push({
+          name: "search",
+          params: { keyword: this.keyword }
+        });
     }
   }
 };

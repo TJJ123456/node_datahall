@@ -74,6 +74,28 @@ route.post('/list', async (req, res, next) => {
     }
 })
 
+route.post('/searchlist', async (req, res, next) => {
+    try {
+        const keyword = req.body.keyword;
+        let regex = new RegExp(keyword);
+        let data = await Datas.find({
+            $or: [
+                { "name": regex }, { "keyword": regex }
+            ]
+        });
+        console.log(keyword, data);
+        for (let i = 0; i < data.length; ++i) {
+            if (data[i].genre !== '') {
+                let doc = await Genres.findOne({ _id: data[i].genre });
+                data[i].genrename = doc.name;
+            }
+        }
+        res.json({ data: data });
+    } catch (e) {
+        res.status(405).send(e.message);
+    }
+})
+
 route.post('/delete', async (req, res, next) => {
     const id = req.body.id;
     try {
