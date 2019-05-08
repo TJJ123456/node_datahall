@@ -1,13 +1,7 @@
 <template>
   <div>
     <headTop/>
-    <h1>欢迎来到图书馆</h1>
-    <ul>
-      <li>书本数量 {{bookCount}}</li>
-      <li>书架数量 {{bookshelfCount}}</li>
-      <li>书本种类 {{genreCount}}</li>
-      <li>读者数量 {{userCount}}</li>
-    </ul>
+    <h1>数据堂后台管理中心</h1>
   </div>
 </template>
 <script>
