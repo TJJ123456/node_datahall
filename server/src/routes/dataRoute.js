@@ -1,6 +1,7 @@
 import { Genres, Datas } from '../providers'
 import express from 'express'
 const route = express.Router();
+import fs from 'fs';
 
 async function getByname(name) {
     return await Datas.findOne({ name })
@@ -83,7 +84,6 @@ route.post('/searchlist', async (req, res, next) => {
                 { "name": regex }, { "keyword": regex }
             ]
         });
-        console.log(keyword, data);
         for (let i = 0; i < data.length; ++i) {
             if (data[i].genre !== '') {
                 let doc = await Genres.findOne({ _id: data[i].genre });
@@ -112,6 +112,30 @@ route.post('/change', async (req, res, next) => {
         let data = await Datas.updateOne({ _id: id }, req.body);
         res.json({ status: 'ok' })
     } catch (e) {
+        res.status(405).send(e.message);
+    }
+})
+
+route.post('/download', async (req, res, next) => {
+    const id = req.body.id;
+    try {
+        if (!req.session.user) {
+            throw new Error('请登录');
+        }
+        let doc = await Datas.findOne({ _id: id });
+        if (doc) {
+            // res.set("Content-type: application/binary");
+            // res.download(doc.filepath);
+            let road = fs.createReadStream(doc.filepath); //创建输入流入口
+            res.writeHead(200, {
+                'Content-Type': 'application/force-download',
+                'Content-Disposition': 'attachment; filename=name'
+            });
+            road.pipe(res);// 通过管道方式写入
+        }
+        // res.json({ status: 'ok' })
+    } catch (e) {
+        console.log(e.message);
         res.status(405).send(e.message);
     }
 })

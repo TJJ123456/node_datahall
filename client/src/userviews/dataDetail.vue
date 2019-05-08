@@ -21,7 +21,8 @@
             <p class="p2" id="datatag">{{item.keyword}}</p>
             <p class="p3" id="datainfo">{{item.desc}}</p>
             <p class="p4">
-              <a v-if="checkBuy">获取数据</a>
+              <a v-if="checkBuy" @click="download()">获取数据</a>
+              <!-- <a v-if="checkBuy" :href="'http://localhost:3000' + item.filepath" download="data">获取数据</a> -->
               <a v-else @click="buy(item)">我要购买</a>
             </p>
           </div>
@@ -139,6 +140,20 @@ export default {
     },
     buy(item) {
       this.dialogFormVisible = true;
+    },
+    async download() {
+      let data = await this.$downloadfetch("data/download", {
+        method: "POST",
+        body: JSON.stringify({
+          id: this.id
+        })
+      });
+      // if (data.err) {
+      //   if (data.msg === "请登录") {
+      //     this.$router.replace("/login", "");
+      //   }
+      // } else {
+      // }
     },
     async confirmBuy() {
       let data = await this.$fetch("order/create", {

@@ -36,14 +36,17 @@ route.get('/userlist', async (req, res, next) => {
             throw new Error('请登录');
         }
         let data = await Orders.find({ userid: req.session.user._id });
-        console.log(data);
         for (let i in data) {
             if (data[i].userid !== '') {
                 let doc = await Users.findOne({ _id: data[i].userid });
                 data[i].username = doc.username;
             }
             let datadoc = await Datas.findOne({ _id: data[i].dataid });
-            data[i].dataname = datadoc.name;
+            if (datadoc) {
+                data[i].dataname = datadoc.name;
+            } else {
+                data[i].dataname = '已删除';
+            }
         }
         res.json({
             data: data

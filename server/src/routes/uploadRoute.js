@@ -31,7 +31,7 @@ route.post('/img', multer({ dest: 'src/public/upload' }).single('file'), (req, r
         fs.renameSync(file.path, file.path + '.docx')
         filename = file.path + '.docx';
     }
-    filename = filename.slice(4);
+    filename = filename.slice(3);
     res.json({
         filepath: filename
     });
