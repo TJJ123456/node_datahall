@@ -1,7 +1,8 @@
-import { Genres, Datas } from '../providers'
+import { Genres, Datas, downloadHead } from '../providers'
 import express from 'express'
 const route = express.Router();
 import fs from 'fs';
+import path from 'path';
 
 async function getByname(name) {
     return await Datas.findOne({ name })
@@ -126,12 +127,13 @@ route.post('/download', async (req, res, next) => {
         if (doc) {
             // res.set("Content-type: application/binary");
             // res.download(doc.filepath);
-            let road = fs.createReadStream(doc.filepath); //创建输入流入口
-            res.writeHead(200, {
-                'Content-Type': 'application/force-download',
-                'Content-Disposition': 'attachment; filename=name'
-            });
-            road.pipe(res);// 通过管道方式写入
+            // let road = fs.createReadStream(doc.filepath); //创建输入流入口
+            // road.pipe(res);// 通过管道方式写入
+            res.set("Content-type: application/binary");
+            let filepath = path.join(downloadHead, doc.filepath);
+            console.log(filepath);
+            res.download(filepath);
+
         }
         // res.json({ status: 'ok' })
     } catch (e) {

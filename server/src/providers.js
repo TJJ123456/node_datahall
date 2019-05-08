@@ -15,3 +15,6 @@ export const Datas = modelFactory(collectionFactory('datas', idIndex))
 //订单表
 export const Orders = modelFactory(collectionFactory('orders', idIndex))
 
+export const downloadHead = __dirname;
+
+

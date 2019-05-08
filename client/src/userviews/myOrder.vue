@@ -3,12 +3,16 @@
     <h2>我的订单列表</h2>
     <el-table v-loading="loading" :data="tableData" style="width: 100%">
       <el-table-column prop="dataname" label="数据名"></el-table-column>
-      <el-table-column prop="username" label="购买用户"></el-table-column>
+      <!-- <el-table-column prop="username" label="购买用户"></el-table-column> -->
       <el-table-column prop="price" label="购买价格"></el-table-column>
       <el-table-column prop="time" label="购买时间"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button
+            size="mini"
+            type="success"
+            @click="handleDownload(scope.$index, scope.row)"
+          >获取数据</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,6 +54,15 @@ export default {
     },
     formatTime(time) {
       return moment(time).format("LL");
+    },
+    async handleDownload(index, row) {
+      // console.log(this.tableData[index]._id);
+      let data = await this.$downloadfetch("data/download", {
+        method: "POST",
+        body: JSON.stringify({
+          id: this.tableData[index].dataid
+        })
+      });
     }
   }
 };

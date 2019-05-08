@@ -10,7 +10,7 @@ export async function $downloadfetch(url, options) {
         },
         credentials: 'include',
     }, options);
-    console.log('1111');
+    // console.log('1111');
 
     const response = await fetch(`${baseUrl}${url}`, finalOptions);
     console.log(response);
@@ -18,8 +18,9 @@ export async function $downloadfetch(url, options) {
         let file = await response.blob();
         let a = document.createElement('a');
         a.href = window.URL.createObjectURL(file);
+        a.download = 'file'
         a.click();
-        // window.URL.revokeObjectURL(a.href);
+        window.URL.revokeObjectURL(a.href);
     } catch (e) {
         console.error(e);
     }
