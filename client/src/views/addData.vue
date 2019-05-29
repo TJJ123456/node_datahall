@@ -47,7 +47,8 @@
                   type="success"
                   @click="submitUpload"
                 >上传到服务器</el-button>
-                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10m</div>
+                <div v-if="type === 0" slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10m</div>
+                <div v-if="type === 1" slot="tip" class="el-upload__tip">只能上传txt/doc/docx文件，且不超过10m</div>
               </el-upload>
             </el-form-item>
             <el-form-item label="数据价格" prop="price">

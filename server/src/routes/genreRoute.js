@@ -9,11 +9,14 @@ async function getByname(name) {
 route.post('/create', async (req, res, next) => {
     try {
         const food = await getByname(req.body.name);
-        console.log(food);
         if (food) {
             throw new Error('已有同名的种类');
         }
-        const newDoc = await Genres.insert(req.body);
+        let doc = {
+            name: req.body.name,
+            type: req.body.type
+        }
+        const newDoc = await Genres.insert(doc);
         res.json({ status: 'ok' })
     } catch (e) {
         console.log(e.message);

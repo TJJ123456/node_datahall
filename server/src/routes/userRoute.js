@@ -38,10 +38,13 @@ async function createUser({ username, password }) {
     if (user) {
         throw new Error('用户名已注册')
     } else {
+        let date = new Date();
         const hash = await hashPassword(password)
         const result = await Users.insert({
             username,
             password: hash,
+            money: 0,
+            createtime: date.getTime()
         })
 
         return result

@@ -3,13 +3,27 @@
     <el-row class="head" :class="{shorthead: checkMyView}">
       <el-col :span="16" :offset="1">
         <div class="head-logo">
-          <router-link :to="{name: 'userindex'}">数据所</router-link>
+          <a @click="toHome()" class="home">数据所</a>
         </div>
       </el-col>
       <el-col :span="4" :offset="3">
         <div class="head-logo">
-          <router-link v-if="$state.user" :to="{path: '/home/myOrder'}">{{$state.user.username}}</router-link>
-          <router-link v-else :to="{path: '/login'}">登陆</router-link>
+          <template>
+            <ul class="nav navbar-nav navbar-right">
+              <li v-if="$state.user">
+                <a @click="toMyview()">{{$state.user.username}}</a>
+              </li>
+              <li v-if="$state.user">
+                <a @click="logout()">登出</a>
+              </li>
+              <li @click="toLogin()" v-if="!$state.user">
+                <a>登录</a>
+              </li>
+            </ul>
+          </template>
+
+          <!-- <router-link v-if="$state.user" :to="{path: '/home/myOrder'}">{{$state.user.username}}</router-link> -->
+          <!-- <router-link v-else :to="{path: '/login'}">登陆</router-link> -->
         </div>
       </el-col>
       <div class="search" v-if="!checkMyView">
@@ -37,7 +51,15 @@ export default {
       // console.log("111");
       this.$router.push({ path: "/home/login" });
     },
-
+    toHome() {
+      this.$router.push({ path: "/" });
+    },
+    toLogin() {
+      this.$router.push({ path: "/login" });
+    },
+    toMyview() {
+      this.$router.push({ path: "/home/myOrder" });
+    },
     async logout() {
       await this.$fetch("user/logout");
       this.$state.user = false;
@@ -83,7 +105,7 @@ export default {
   height: 40px;
   display: inline-block;
 }
-.head-logo a {
+.home {
   display: block;
   // float: left;
   width: 160px;
@@ -91,6 +113,9 @@ export default {
   color: white;
   text-align: center;
   overflow: hidden;
+}
+a:hover {
+  cursor: pointer;
 }
 .search {
   width: 400px;
@@ -109,5 +134,36 @@ export default {
 }
 .shorthead {
   height: 100px;
+}
+.navbar-right {
+  float: right !important;
+}
+
+.navbar-nav {
+  float: left;
+  margin: 0;
+}
+.navbar-nav::before {
+  content: " ";
+  display: table;
+}
+.navbar-nav > li {
+  float: left;
+}
+.nav > li {
+  position: relative;
+  display: block;
+}
+.main .nav.navbar-nav.navbar-right a {
+  color: #fff;
+}
+.navbar-inverse .navbar-nav > li > a {
+  color: #777;
+}
+.navbar-nav > li > a {
+  padding-top: 15px;
+  padding-right: 20px;
+  padding-bottom: 15px;
+  font-size: 24px;
 }
 </style>

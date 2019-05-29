@@ -14,7 +14,17 @@ route.post('/create', async (req, res, next) => {
         if (food) {
             throw new Error('已有同名的数据');
         }
-        const newDoc = await Datas.insert(req.body);
+        let doc = {
+            name: req.body.name,
+            desc: req.body.desc,
+            genre: req.body.genre,
+            filepath: req.body.filepath,
+            keyword: req.body.keyword,
+            price: req.body.price,
+            type: req.body.type,
+
+        }
+        const newDoc = await Datas.insert(doc);
         res.json({ status: 'ok' })
     } catch (e) {
         console.log(e.message);

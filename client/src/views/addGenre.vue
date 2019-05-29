@@ -33,7 +33,8 @@ export default {
   data() {
     return {
       ruleForm: {
-        name: ""
+        name: "",
+        type: this.type
       },
       rules: {
         name: [{ required: true, message: "请输入种类名称", trigger: "blur" }]
@@ -53,8 +54,6 @@ export default {
       });
     },
     async create() {
-      this.ruleForm.type = this.type;
-      console.log(this.ruleForm);
       let data = await this.$fetch("genre/create", {
         method: "POST",
         body: JSON.stringify(this.ruleForm)
