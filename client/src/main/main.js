@@ -29,7 +29,6 @@ let userdata = localStorage.getItem('user')
 if (userdata) {
   state.user = JSON.parse(userdata);
 }
-console.log(state.user);
 
 async function main() {
   try {

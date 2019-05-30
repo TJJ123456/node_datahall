@@ -61,12 +61,14 @@ async function createData() {
       let genre = item._id;
       let keyword = keywordArr[randomIndex(keywordArr.length)];
       let type = item.type;
+      let imgpath = 'public/img/default.jpg';
       let filepath = item.type === 0 ? 'public/img/default.jpg' : 'public/txt/123.txt';
       let price = randomIndex(9999) + 100;
       let doc = {
         name,
         desc,
         genre,
+        imgpath,
         filepath,
         keyword,
         price,
@@ -78,7 +80,7 @@ async function createData() {
 }
 
 async function initData() {
-  await createGenre();
+  // await createGenre();
   await createData();
 }
 

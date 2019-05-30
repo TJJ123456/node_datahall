@@ -10,11 +10,7 @@
       <div class="cpxq_01_cell cpxq_01_l" id="titleimg">
         <div class="cpxq_01">
           <div class="cpxq_01_cell cpxq_01_l">
-            <img
-              src="http://localhost:3000/public/img/datatang_tuxiang_default.jpg"
-              height="330px"
-              width="540px"
-            >
+            <img :src="getImgpath(item.imgpath)" height="330px" width="540px">
           </div>
           <div class="cpxq_01_cell cpxq_01_r">
             <p class="p1" id="dataname">{{item.name}}</p>
@@ -33,15 +29,16 @@
         <div class="cpxq_02_c">
           <div class="cpxq_02c_slide swiper-container-horizontal">
             <div class="swiper-wrapper">
-              <div
+              <div v-for="(item, index) in relateList" :key="index"
                 style="width: 237.5px; margin-right: 20px;"
                 class="swiper-slide swiper-slide-active"
               >
                 <a>
                   <em>
-                    <img src="http://localhost:3000/public/img/datatang_tuxiang_default.jpg" alt>
+                    <!-- <img src="http://localhost:3000/public/img/datatang_tuxiang_default.jpg" alt> -->
+                    <img :src="getImgpath(item.imgpath)" alt>
                   </em>
-                  <span>哈哈哈</span>
+                  <span>{{item.name}}</span>
                 </a>
               </div>
             </div>
@@ -101,6 +98,7 @@ export default {
     return {
       item: {},
       mylist: [],
+      relateList: [],
       dialogFormVisible: false
     };
   },
@@ -116,6 +114,9 @@ export default {
     }
   },
   methods: {
+    getImgpath(path) {
+      return "http://localhost:3000/" + path;
+    },
     async initData() {
       let data = await this.$fetch("data/data", {
         method: "POST",
@@ -124,6 +125,7 @@ export default {
         })
       });
       this.item = data.data;
+      this.relateList = data.relateList;
       this.getuserlist();
     },
     async getuserlist() {

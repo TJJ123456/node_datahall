@@ -71,6 +71,7 @@ export default {
 @import "../style/mixin";
 .table_container {
   padding: 30px 200px 0px 200px;
+  min-height: 800px;
 }
 .el-form-item {
   margin-right: 0;

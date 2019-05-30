@@ -2,16 +2,17 @@
   <div class="wrap kfsj_05">
     <div class="wrap_c">
       <ul>
-        <li class="fl" v-for="(item, index) in dataList" :key="index">
+        <li class="fl" v-for="(item, index) in showList" :key="index">
           <div class="fl">
-            <img src="http://localhost:3000/public/img/datatang_tuxiang_default.jpg" alt>
+            <img :src="getImgpath(item.imgpath)" alt>
+            <!-- <img src="http://localhost:3000/public/img/datatang_tuxiang_default.jpg" alt> -->
           </div>
           <div class="fr">
             <em class="em1">
               <span class="sp1">
                 <a @click="toDetail(item._id)">{{item.name}}</a>
               </span>
-              <span class="sp2">{{item.desc}}</span>
+              <span class="sp2">{{shortDesc(item.desc)}}</span>
               <span class="sp3">
                 <a>{{item.keyword}}</a>
               </span>
@@ -24,7 +25,17 @@
           </div>
         </li>
       </ul>
+      <div class="Pagination" style="margin-top:20px">
+        <el-pagination
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-size="10"
+          layout="total, prev, pager, next"
+          :total="dataList.length"
+        ></el-pagination>
+      </div>
     </div>
+
     <el-dialog title="购买数据" :visible.sync="dialogFormVisible">
       <p class="p2">
         <span>数据名称: {{buyItem.name}}</span>
@@ -42,17 +53,40 @@
 export default {
   data() {
     return {
+      currentPage: 1,
+      offset: 0,
+      limit: 10,
       dialogFormVisible: false,
       buyItem: {}
     };
   },
+  computed: {
+    showList() {
+      return this.dataList.slice(this.offset, this.offset + 10);
+    }
+  },
   methods: {
+    getImgpath(path) {
+      return 'http://localhost:3000/' + path;
+    },
+    shortDesc(desc) {
+      if (desc.length < 73) {
+        return desc;
+      }
+      let str = desc.slice(0, 70);
+      str += "...";
+      return str;
+    },
     toDetail(id) {
       this.$router.push({ name: "detail", params: { id: id } });
     },
     buy(item) {
       this.dialogFormVisible = true;
       this.buyItem = item;
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.offset = (val - 1) * this.limit;
     },
     async confirmBuy() {
       let data = await this.$fetch("order/create", {

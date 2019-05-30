@@ -18,11 +18,11 @@ route.post('/create', async (req, res, next) => {
             name: req.body.name,
             desc: req.body.desc,
             genre: req.body.genre,
+            imgpath: req.body.imgpath,
             filepath: req.body.filepath,
             keyword: req.body.keyword,
             price: req.body.price,
             type: req.body.type,
-
         }
         const newDoc = await Datas.insert(doc);
         res.json({ status: 'ok' })
@@ -36,10 +36,21 @@ route.post('/data', async (req, res, next) => {
     const id = req.body.id;
     try {
         let data = await Datas.findOne({ _id: id });
+
+        let relateList = await Datas.find(
+            {
+                $and:
+                    [
+                        { genre: data.genre },
+                        { _id: { $ne: data._id } }
+                    ]
+            }, { limit: 4 });
         res.json({
-            data: data
+            data: data,
+            relateList: relateList
         });
     } catch (e) {
+        console.log(e.message);
         res.status(405).send(e.message);
     }
 })
