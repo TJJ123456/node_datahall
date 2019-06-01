@@ -29,14 +29,16 @@
         <div class="cpxq_02_c">
           <div class="cpxq_02c_slide swiper-container-horizontal">
             <div class="swiper-wrapper">
-              <div v-for="(item, index) in relateList" :key="index"
+              <div
+                v-for="(item, index) in relateList"
+                :key="index"
                 style="width: 237.5px; margin-right: 20px;"
                 class="swiper-slide swiper-slide-active"
               >
                 <a>
                   <em>
                     <!-- <img src="http://localhost:3000/public/img/datatang_tuxiang_default.jpg" alt> -->
-                    <img :src="getImgpath(item.imgpath)" alt>
+                    <img :src="getImgpath(item.imgpath)" alt width="255px" height="156px">
                   </em>
                   <span>{{item.name}}</span>
                 </a>
@@ -75,15 +77,64 @@
       </div>
     </div>
     <el-dialog title="购买数据" :visible.sync="dialogFormVisible">
-      <p class="p2">
-        <span>数据名称: {{item.name}}</span>
-      </p>
-      <p class="p2">
-        <span>数据价格: {{item.price}}</span>
-      </p>
-      <p class="p3">
-        <input @click="confirmBuy()" type="button" class="zxtc_btn" value="确定购买">
-      </p>
+      <el-row>
+        <el-col :span="14" :offset="5">
+          <p class="p2">
+            <span>数据名称: {{item.name}}</span>
+          </p>
+          <p class="p2">
+            <span>数据价格: {{item.price}}</span>
+          </p>
+          <p class="p2">
+            <span v-if="$state.user">
+              账户余额: {{$state.user.money}}
+              <span
+                v-if="checkmoney()"
+                style="color:#f11;font-size:12px"
+              >(账户余额不足)</span>
+            </span>
+          </p>
+          <p class="p3">
+            <input
+              v-if="checkmoney()"
+              @click="charge()"
+              type="button"
+              class="zxtc_btn"
+              value="我要充值"
+            >
+            <input v-else @click="confirmBuy()" type="button" class="zxtc_btn" value="确定购买">
+          </p>
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog title="充值" :visible.sync="chargeVisible">
+      <div class="compay-num-list">
+        <div class="compay-title">
+          <span class="txt">充值项目</span>
+        </div>
+        <div class="compay-num-ul-wrap">
+          <ul class="compay-num-ul J_union_list">
+            <li
+              :class="{cur:selectIndex===index}"
+              class="item J_num_item"
+              v-for="(item, index) in chargeArr"
+              :key="index"
+              @click="selectIndex = index"
+            >
+              <div class="item-con">
+                <span class="yc">{{item}}元</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <el-row style="margin-top:20px">
+        <el-col :span="10" :offset="7">
+          <p class="p3">
+            <input @click="confirmCharge()" type="button" class="zxtc_btn" value="确定充值">
+          </p>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -96,10 +147,13 @@ export default {
   },
   data() {
     return {
-      item: {},
+      item: { name: "", price: 10 },
       mylist: [],
       relateList: [],
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      chargeVisible: false,
+      chargeArr: [100, 200, 500, 1000],
+      selectIndex: 0
     };
   },
   created() {
@@ -114,8 +168,11 @@ export default {
     }
   },
   methods: {
+    checkmoney() {
+      return this.$state.user && this.$state.user.money < this.item.price;
+    },
     getImgpath(path) {
-      return "http://localhost:3000/" + path;
+      return "http://localhost:3000" + path;
     },
     async initData() {
       let data = await this.$fetch("data/data", {
@@ -181,7 +238,34 @@ export default {
           type: "success"
         });
         this.getuserlist();
+        this.$state.user = data;
         this.dialogFormVisible = false;
+      }
+    },
+    async confirmCharge() {
+      let data = await this.$fetch("user/charge", {
+        method: "POST",
+        body: JSON.stringify({
+          money: this.chargeArr[this.selectIndex]
+        })
+      });
+      if (data.err) {
+        if (data.msg === "请登录") {
+          this.$router.replace("/login", "");
+        }
+        this.$message({
+          showClose: true,
+          message: data.msg,
+          type: "error"
+        });
+      } else {
+        this.$message({
+          showClose: true,
+          message: "充值成功",
+          type: "success"
+        });
+        this.$state.user = data;
+        this.chargeVisible = false;
       }
     }
   }

@@ -37,15 +37,64 @@
     </div>
 
     <el-dialog title="购买数据" :visible.sync="dialogFormVisible">
-      <p class="p2">
-        <span>数据名称: {{buyItem.name}}</span>
-      </p>
-      <p class="p2">
-        <span>数据价格: {{buyItem.price}}</span>
-      </p>
-      <p class="p3">
-        <input @click="confirmBuy()" type="button" class="zxtc_btn" value="确定购买">
-      </p>
+      <el-row>
+        <el-col :span="10" :offset="7">
+          <p class="p2">
+            <span>数据名称: {{buyItem.name}}</span>
+          </p>
+          <p class="p2">
+            <span>数据价格: {{buyItem.price}}</span>
+          </p>
+          <p class="p2">
+            <span v-if="$state.user">
+              账户余额: {{$state.user.money}}
+              <span
+                v-if="checkmoney()"
+                style="color:#f11;font-size:12px"
+              >(账户余额不足)</span>
+            </span>
+          </p>
+          <p class="p3">
+            <input
+              v-if="checkmoney()"
+              @click="charge()"
+              type="button"
+              class="zxtc_btn"
+              value="我要充值"
+            >
+            <input v-else @click="confirmBuy()" type="button" class="zxtc_btn" value="确定购买">
+          </p>
+        </el-col>
+      </el-row>
+    </el-dialog>
+    <el-dialog title="充值" :visible.sync="chargeVisible">
+      <div class="compay-num-list">
+        <div class="compay-title">
+          <span class="txt">充值项目</span>
+        </div>
+        <div class="compay-num-ul-wrap">
+          <ul class="compay-num-ul J_union_list">
+            <li
+              :class="{cur:selectIndex===index}"
+              class="item J_num_item"
+              v-for="(item, index) in chargeArr"
+              :key="index"
+              @click="selectIndex = index"
+            >
+              <div class="item-con">
+                <span class="yc">{{item}}元</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <el-row style="margin-top:20px">
+        <el-col :span="10" :offset="7">
+          <p class="p3">
+            <input @click="confirmCharge()" type="button" class="zxtc_btn" value="确定充值">
+          </p>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -57,7 +106,10 @@ export default {
       offset: 0,
       limit: 10,
       dialogFormVisible: false,
-      buyItem: {}
+      chargeVisible: false,
+      buyItem: {},
+      chargeArr: [100, 200, 500, 1000],
+      selectIndex: 0
     };
   },
   computed: {
@@ -65,9 +117,18 @@ export default {
       return this.dataList.slice(this.offset, this.offset + 10);
     }
   },
+  mounted() {
+    this.$on("handleCharge", () => {
+      console.log("监听到了");
+      this.chargeVisible = false;
+    });
+  },
   methods: {
     getImgpath(path) {
-      return 'http://localhost:3000/' + path;
+      return "http://localhost:3000" + path;
+    },
+    checkmoney() {
+      return this.$state.user && this.$state.user.money < this.buyItem.price;
     },
     shortDesc(desc) {
       if (desc.length < 73) {
@@ -87,6 +148,10 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val;
       this.offset = (val - 1) * this.limit;
+    },
+    charge() {
+      this.dialogFormVisible = false;
+      this.chargeVisible = true;
     },
     async confirmBuy() {
       let data = await this.$fetch("order/create", {
@@ -111,7 +176,34 @@ export default {
           message: "购买成功",
           type: "success"
         });
+        this.$state.user = data;
         this.dialogFormVisible = false;
+      }
+    },
+    async confirmCharge() {
+      let data = await this.$fetch("user/charge", {
+        method: "POST",
+        body: JSON.stringify({
+          money: this.chargeArr[this.selectIndex]
+        })
+      });
+      if (data.err) {
+        if (data.msg === "请登录") {
+          this.$router.replace("/login", "");
+        }
+        this.$message({
+          showClose: true,
+          message: data.msg,
+          type: "error"
+        });
+      } else {
+        this.$message({
+          showClose: true,
+          message: "充值成功",
+          type: "success"
+        });
+        this.$state.user = data;
+        this.chargeVisible = false;
       }
     }
   },
@@ -304,6 +396,80 @@ textarea {
 p.p2 {
   line-height: 35px;
   margin-top: 10px;
+  font-size: 18px;
+}
+
+.compay-num-list {
+  position: relative;
+  width: 672px;
+  overflow: hidden;
+  margin: -20px auto 0;
+}
+.compay-title {
+  font-size: 12px;
+  color: #333;
+  margin: 14px 20px 10px;
+}
+.compay-title .txt {
+  margin-left: 3px;
+}
+
+.compay-tab .tab-item,
+.compay-title .icon,
+.compay-title .txt {
+  display: inline-block;
+  vertical-align: middle;
+}
+.compay-num-ul-wrap {
+  position: relative;
+  width: 630px;
+  height: 60px;
+  padding-top: 20px;
+  margin: 0 auto;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.compay-num-ul {
+  position: absolute;
+  left: 0;
+}
+.compay-num-list .item {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  height: 58px;
+  border: 1px solid #e5e5e5;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 4px;
+  margin: 0 6px;
+  background-color: #fff;
+  width: 103px;
+}
+.compay-num-list .item-con {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+.compay-num-list .item .yc {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f70;
+}
+.compay-num-list .item:after {
+  display: inline-block;
+  vertical-align: middle;
+  content: "";
+  width: 0;
+  height: 100%;
+}
+
+.compay-num-list .item.cur {
+  width: 101px;
+  height: 56px;
+  border: 2px solid #f50;
 }
 </style>
 

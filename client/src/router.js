@@ -24,13 +24,14 @@ import home from './views/home.vue';
 import userhome from './userviews/userhome.vue';
 import userLayout from './userviews/userLayout.vue';
 import userLogin from './userviews/login.vue';
+import fortgetPassword from './userviews/fortgetPassword.vue';
 import myOrder from './userviews/myOrder.vue';
 import dataDetail from './userviews/dataDetail.vue';
 import searchview from './userviews/searchview.vue';
 
 const routes = [
     {
-        path: '/', name: 'userhome', component: userLayout,
+        path: '/', component: userLayout,
         children: [{
             path: '/',
             name: 'userindex',
@@ -61,6 +62,11 @@ const routes = [
         name: 'login',
         component: userLogin,
         meta: [],
+    },
+    {
+        path: '/fortgetpassword',
+        name: 'fortgetpassword',
+        component: fortgetPassword,
     },
     { path: '/managerlogin', name: 'managerlogin', component: mangerLogin },
     {

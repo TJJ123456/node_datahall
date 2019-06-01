@@ -14,6 +14,8 @@ export const Genres = modelFactory(collectionFactory('genres', idIndex))
 export const Datas = modelFactory(collectionFactory('datas', idIndex))
 //订单表
 export const Orders = modelFactory(collectionFactory('orders', idIndex))
+//充值表
+export const Charges = modelFactory(collectionFactory('charges', idIndex))
 
 export const downloadHead = __dirname;
 
@@ -61,9 +63,9 @@ async function createData() {
       let genre = item._id;
       let keyword = keywordArr[randomIndex(keywordArr.length)];
       let type = item.type;
-      let imgpath = 'public/img/default.jpg';
+      let imgpath = '/public/img/' + randomIndex(8) + '.jpg';
       let filepath = item.type === 0 ? 'public/img/default.jpg' : 'public/txt/123.txt';
-      let price = randomIndex(9999) + 100;
+      let price = randomIndex(200) + 20;
       let doc = {
         name,
         desc,
@@ -79,10 +81,40 @@ async function createData() {
   })
 }
 
-async function initData() {
-  // await createGenre();
-  await createData();
+async function createOrder() {
+  const start = new Date(new Date().toLocaleDateString()).getTime();
+  const dataList = await Datas.find({});
+  const userList = await Users.find({});
+  if (dataList.length === 0 || userList.length === 0) {
+    return;
+  }
+
+  for (let i = 6; i > -1; i--) {
+    let count = randomIndex(20);
+    for (let j = 0; j < count; ++j) {
+      let userIndex = randomIndex(userList.length - 1);
+      let userid = userList[userIndex]._id;
+      let itemIndex = randomIndex(dataList.length - 1);
+      let itemid = dataList[itemIndex]._id;
+      let price = dataList[itemIndex].price;
+      let createTime = start - 86400000 * i + randomIndex(99999);
+      const data = {
+        dataid: itemid,
+        userid: userid,
+        price,
+        createTime,
+      }
+      const newDoc = await Orders.insert(data);
+    }
+  }
 }
 
-// initData()
+async function initData() {
+  // await createGenre();
+  // await createData();
+  // createUser();
+  createOrder();
+}
+
+// initData();
 

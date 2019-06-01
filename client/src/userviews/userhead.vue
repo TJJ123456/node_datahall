@@ -11,13 +11,13 @@
           <template>
             <ul class="nav navbar-nav navbar-right">
               <li v-if="$state.user">
-                <a @click="toMyview()">{{$state.user.username}}</a>
+                <a style="color:white" @click="toMyview()">{{$state.user.username}}</a>
               </li>
               <li v-if="$state.user">
-                <a @click="logout()">登出</a>
+                <a style="color:white" @click="logout()">登出</a>
               </li>
               <li @click="toLogin()" v-if="!$state.user">
-                <a>登录</a>
+                <a style="color:white">登录</a>
               </li>
             </ul>
           </template>

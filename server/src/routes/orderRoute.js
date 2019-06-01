@@ -23,7 +23,13 @@ route.post('/create', async (req, res, next) => {
             createtime: date.getTime()
         }
         const newDoc = await Orders.insert(data);
-        res.json({ status: 'ok' })
+        req.session.user.money -= data.price;
+        await Users.updateOne({ _id: req.session.user._id }, { $set: { 'money': req.session.user.money } });
+        res.json({
+            _id: req.session.user._id,
+            username: req.session.user.username,
+            money: req.session.user.money
+        })
     } catch (e) {
         console.log(e.message);
         res.status(405).send(e.message);

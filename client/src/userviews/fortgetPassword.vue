@@ -3,16 +3,9 @@
     <el-row>
       <el-col :span="8" :offset="8">
         <div class="login">
-          <el-tabs
-            :stretch="true"
-            tab-position="bottom"
-            v-model="activeName2"
-            type="card"
-            @tab-click="handleClick"
-          >
-            <el-tab-pane label="登陆" name="first"></el-tab-pane>
-            <el-tab-pane label="注册" name="second"></el-tab-pane>
-          </el-tabs>
+          <div class="title">
+            <span>{{title}}</span>
+          </div>
           <!-- <header class="form_header">{{title}}</header> -->
           <el-form
             :model="ruleForm"
@@ -21,16 +14,10 @@
             label-width="110px"
             class="form food_form"
           >
-            <el-form-item label="用户名" prop="username">
+            <el-form-item v-if="mode === 'username'" label="用户名" prop="username">
               <el-input v-model="ruleForm.username" autocomplete="off"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="password">
-              <el-input type="password" v-model="ruleForm.password"></el-input>
-            </el-form-item>
-            <el-form-item v-if="mode==='signup'" label="确认密码" prop="checkpassword">
-              <el-input type="password" v-model="ruleForm.checkpassword"></el-input>
-            </el-form-item>
-            <el-form-item v-if="mode==='signup'" label="密保问题" prop="question">
+            <el-form-item v-if="mode==='answer'" label="密保问题" prop="question">
               <el-select v-model="ruleForm.question" placeholder="请选择密保问题" style="width: 100%;">
                 <el-option
                   v-for="(item, index) in questionList"
@@ -40,14 +27,18 @@
                 >{{item}}</el-option>
               </el-select>
             </el-form-item>
-            <el-form-item v-if="mode==='signup'" label="密保答案" prop="answer">
+            <el-form-item v-if="mode==='answer'" label="密保答案" prop="answer">
               <el-input type="text" v-model="ruleForm.answer"></el-input>
+            </el-form-item>
+            <el-form-item v-if="mode==='password'" label="密码" prop="password">
+              <el-input type="password" v-model="ruleForm.password"></el-input>
+            </el-form-item>
+            <el-form-item v-if="mode==='password'" label="确认密码" prop="checkpassword">
+              <el-input type="password" v-model="ruleForm.checkpassword"></el-input>
             </el-form-item>
             <el-form-item>
               <el-row type="flex" justify="center">
-                <el-button type="primary" @click="onSubmit('ruleForm')">{{title}}</el-button>
-                <a @click="forgetPassword()" class="forgetpassword" v-if="mode === 'login'">忘记密码？</a>
-                <!-- <el-button type="success" @click="mode = 'signup'">注册</el-button> -->
+                <el-button type="primary" @click="onSubmit('ruleForm')">确认</el-button>
               </el-row>
             </el-form-item>
           </el-form>
@@ -72,9 +63,9 @@ export default {
       }
     };
     return {
-      mode: "login",
-      questionList: [],
+      mode: "username",
       activeName2: "first",
+      questionList: [],
       ruleForm: {
         username: "",
         password: "",
@@ -89,23 +80,24 @@ export default {
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
         checkpassword: [
           { required: true, validator: validateCheckPass, trigger: "blur" }
-        ],
-        answer: [{ required: true, message: "请输入密保答案", trigger: "blur" }]
+        ]
       }
     };
-  },
-  created() {
-    this.initData();
   },
   computed: {
     title() {
       switch (this.mode) {
-        case "login":
-          return "登录";
-        case "signup":
-          return "注册";
+        case "username":
+          return "检查用户名";
+        case "answer":
+          return "确认密保答案";
+        case "password":
+          return "更改新密码";
       }
     }
+  },
+  created() {
+    this.initData();
   },
   methods: {
     async initData() {
@@ -133,18 +125,13 @@ export default {
         }
       });
     },
-    async operation() {
-      await this[this.mode]();
-    },
-    async login() {
-      const data = await this.$fetch("user/login", {
+    async username() {
+      let data = await this.$fetch("user/checkusername", {
         method: "POST",
         body: JSON.stringify({
-          username: this.ruleForm.username,
-          password: this.ruleForm.password
+          username: this.ruleForm.username
         })
       });
-      console.log(data);
       if (data.err) {
         this.$message({
           showClose: true,
@@ -152,26 +139,14 @@ export default {
           type: "error"
         });
       } else {
-        this.$message({
-          showClose: true,
-          message: "登录成功",
-          type: "success"
-        });
-        this.$state.user = data;
-        localStorage.setItem("user", JSON.stringify(data));
-        if (this.$route.params.wantedRoute) {
-          this.$router.replace(this.$route.params.wantedRoute);
-        } else {
-          this.$router.replace("/");
-        }
+        this.mode = "answer";
       }
     },
-    async signup() {
-      const data = await this.$fetch("user/signup", {
+    async answer() {
+      let data = await this.$fetch("user/checkquestion", {
         method: "POST",
         body: JSON.stringify({
           username: this.ruleForm.username,
-          password: this.ruleForm.password,
           question: this.ruleForm.question,
           answer: this.ruleForm.answer
         })
@@ -183,20 +158,41 @@ export default {
           type: "error"
         });
       } else {
-        this.$message({
-          showClose: true,
-          message: "注册账号成功",
-          type: "success"
-        });
-        this.resetForm("ruleForm");
-        this.mode = "login";
+        this.mode = "password";
       }
     },
+    async password() {
+      let data = await this.$fetch("user/resetpassword", {
+        method: "POST",
+        body: JSON.stringify({
+          username: this.ruleForm.username,
+          question: this.ruleForm.question,
+          answer: this.ruleForm.answer,
+          password: this.ruleForm.password
+        })
+      });
+      if (data.err) {
+        this.$message({
+          showClose: true,
+          message: data.msg,
+          type: "error"
+        });
+      } else {
+        // this.mode = "password";
+        this.$message({
+          showClose: true,
+          message: "修改密码成功",
+          type: "success"
+        });
+        this.$router.push({ path: "/login" });
+      }
+    },
+    async operation() {
+      await this[this.mode]();
+    },
+
     resetForm(formName) {
       this.$refs[formName].resetFields();
-    },
-    forgetPassword() {
-      this.$router.push({ path: "/fortgetpassword" });
     }
   }
 };
@@ -234,8 +230,13 @@ export default {
   margin-left: 10px;
   font-size: 12px;
   color: gray;
-  &:hover {
-    cursor: pointer;
-  }
+}
+.title {
+  height: 40px;
+  text-align: center;
+}
+.title span {
+  line-height: 40px;
+  text-align: center;
 }
 </style>
