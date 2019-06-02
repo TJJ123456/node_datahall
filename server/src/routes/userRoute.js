@@ -185,6 +185,7 @@ route.get('/list', async (req, res, next) => {
         let data = await Users.find({});
         for (let i = 0; i < data.length; ++i) {
             data[i].ordercount = await Orders.count({ userid: data[i]._id });
+            data[i].chargeList = await Charges.find({ userid: data[i]._id });
         }
         res.json({
             data: data
@@ -223,6 +224,17 @@ route.post('/charge', async (req, res, next) => {
         }
         let newdoc = await Charges.insert(doc);
         return sendUserInfo(req, res);
+    } catch (e) {
+        res.status(405).send(e.message);
+    }
+})
+
+route.get('/chargelist', async (req, res, next) => {
+    try {
+        let data = await Charges.find({});
+        res.json({
+            data: data
+        });
     } catch (e) {
         res.status(405).send(e.message);
     }

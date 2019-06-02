@@ -18,7 +18,7 @@ function sendManagerInfo(req, res) {
     manager: req.session.manager,
   })
 }
-
+//总路由
 export default function (app) {
   app.use('/genre', genreRoute);
   // app.use('/plan', planRoute);

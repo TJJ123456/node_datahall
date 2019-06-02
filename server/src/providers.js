@@ -97,14 +97,40 @@ async function createOrder() {
       let itemIndex = randomIndex(dataList.length - 1);
       let itemid = dataList[itemIndex]._id;
       let price = dataList[itemIndex].price;
-      let createTime = start - 86400000 * i + randomIndex(99999);
+      let createtime = start - 86400000 * i + randomIndex(99999);
       const data = {
         dataid: itemid,
         userid: userid,
         price,
-        createTime,
+        createtime,
       }
       const newDoc = await Orders.insert(data);
+    }
+  }
+}
+
+const chargeArr = [100, 200, 500, 1000];
+
+async function createCharge() {
+  const start = new Date(new Date().toLocaleDateString()).getTime();
+  const userList = await Users.find({});
+  if (userList.length === 0) {
+    return;
+  }
+
+  for (let i = 6; i > -1; i--) {
+    let count = randomIndex(20);
+    for (let j = 0; j < count; ++j) {
+      let userIndex = randomIndex(userList.length - 1);
+      let userid = userList[userIndex]._id;
+      let money = chargeArr[randomIndex(chargeArr.length)];
+      let createtime = start - 86400000 * i + randomIndex(99999);
+      const data = {
+        userid: userid,
+        money,
+        createtime,
+      }
+      const newDoc = await Charges.insert(data);
     }
   }
 }
@@ -114,6 +140,7 @@ async function initData() {
   // await createData();
   // createUser();
   createOrder();
+  createCharge();
 }
 
 // initData();

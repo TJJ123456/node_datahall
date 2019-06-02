@@ -14,10 +14,10 @@ route.post('/img', multer({ dest: 'src/public/upload' }).single('file'), (req, r
     let filename = file.path;
     if (file.mimetype === 'image/jpg') {
         fs.renameSync(file.path, file.path + '.jpg')
-        filename += file.path + '.jpg';
+        filename = file.path + '.jpg';
     } else if (file.mimetype === 'image/png') {
         fs.renameSync(file.path, file.path + '.png')
-        filename += file.path + '.png';
+        filename = file.path + '.png';
     } else if (file.mimetype === 'image/jpeg') {
         fs.renameSync(file.path, file.path + '.jpeg')
         filename = file.path + '.jpeg';

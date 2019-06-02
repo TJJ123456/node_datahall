@@ -1,12 +1,28 @@
 <template>
   <div class="fillcontain">
     <headTop/>
+    <div style="margin-top:10px;">
+      <input v-model="search" type="text" class="searchbox" placeholder="输入数据名称">
+      <p style="color:gray; margin-left:20px; font-size: 14px;">输入数据名称快速检索数据</p>
+    </div>
     <div class="table_container">
-      <el-table v-loading="loading" :data="tableData" style="width: 100%">
+      <el-table border v-loading="loading" :data="showList" style="width: 100%">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item label="数据名称">
+                <span>{{ props.row.name }}</span>
+              </el-form-item>
+              <el-form-item label="数据描述">
+                <span>{{ props.row.desc }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="名字"></el-table-column>
-        <el-table-column prop="desc" label="描述"></el-table-column>
         <el-table-column prop="genrename" label="分类"></el-table-column>
         <el-table-column prop="price" label="价格"></el-table-column>
+        <el-table-column prop="ordercount" label="成交数量"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -20,7 +36,7 @@
           :current-page="currentPage"
           :page-size="10"
           layout="total, prev, pager, next"
-          :total="count"
+          :total="tableData.length"
         ></el-pagination>
       </div>
       <el-dialog title="修改种类信息" :visible.sync="dialogFormVisible">
@@ -43,6 +59,24 @@
                 :value="item._id"
               >{{item.name}}</el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="更换数据头像图片（可选）" prop="filepath">
+            <el-upload
+              class="avatar-uploader"
+              ref="upload"
+              action="http://localhost:3000/posts/img"
+              :before-upload="beforeUpAvatarload"
+              :on-success="uploadAvatarSuccess"
+              :limit="1"
+            >
+              <img
+                v-if="dialogForm.imgpath"
+                :src="'http://localhost:3000' + dialogForm.imgpath"
+                class="avatar"
+              >
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10m</div>
+            </el-upload>
           </el-form-item>
           <el-form-item label="更换数据文件（可选）">
             <el-upload
@@ -81,6 +115,7 @@ export default {
   props: { type: { type: Number, required: true } },
   data() {
     return {
+      search: "",
       editIndex: 0,
       currentPage: 1,
       offset: 0,
@@ -109,6 +144,14 @@ export default {
     this.initData();
   },
   watch: {},
+  computed: {
+    showList() {
+      let list = this.tableData;
+      let regex = new RegExp(this.search);
+      list = list.filter(item => item.name.match(regex));
+      return list.slice(this.offset, this.offset + 10);
+    }
+  },
   methods: {
     getGenreName(id) {
       let doc = this.tableData.find(item => item._id === id);
@@ -128,13 +171,7 @@ export default {
       }
     },
     async getList() {
-      let data = await this.$fetch("data/list", {
-        method: "POST",
-        body: JSON.stringify({
-          limit: this.limit,
-          offset: this.offset
-        })
-      });
+      let data = await this.$fetch("data/list");
       this.tableData = data.data.filter(item => item.type === this.type);
     },
     handleEdit(index, row) {
@@ -142,9 +179,7 @@ export default {
       this.dialogFormVisible = true;
       this.dialogForm = JSON.parse(JSON.stringify(this.tableData[index]));
       let genre = this.dialogForm.genre;
-      console.log("种类", genre);
       this.dialogFormSelect = this.tableData.find(item => {
-        console.log(item._id, genre, item._id === genre);
         return item._id === genre;
       });
     },
@@ -152,7 +187,7 @@ export default {
       let data = await this.$fetch("data/delete", {
         method: "POST",
         body: JSON.stringify({
-          id: this.tableData[index]._id
+          id: this.showList[index]._id
         })
       });
       if (data.err) {
@@ -167,13 +202,13 @@ export default {
           message: "删除数据成功",
           type: "success"
         });
-        this.tableData.splice(index, 1);
+        this.showList.splice(index, 1);
       }
     },
     handleCurrentChange(val) {
       this.currentPage = val;
       this.offset = (val - 1) * this.limit;
-      this.getList();
+      // this.getList();
     },
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {
@@ -235,6 +270,27 @@ export default {
         );
         this.dialogFormVisible = false;
       }
+    },
+    beforeUpAvatarload(file) {
+      console.log(file.type);
+      const isJPGorPng =
+        file.type === "image/jpg" ||
+        file.type === "image/png" ||
+        file.type === "image/jpeg";
+      const isLt10M = file.size / 1024 / 1024 < 10;
+      if (!isJPGorPng) {
+        this.$message.error("上传图片只能是 JPG/jpeg/png 格式!");
+      }
+      if (!isLt10M) {
+        this.$message.error("上传图片大小不能超过 10MB!");
+      }
+      return isJPGorPng && isLt10M;
+
+      return false;
+    },
+    uploadAvatarSuccess(res, file) {
+      this.ruleForm.imgpath = res.filepath;
+      //   console.log(res, file);
     }
   }
 };
@@ -247,5 +303,11 @@ export default {
 .el-form-item {
   margin-right: 0;
   margin-bottom: 20px;
+}
+.searchbox {
+  border: 1px solid #8c939d;
+  height: 30px;
+  width: 200px;
+  margin-left: 20px;
 }
 </style>

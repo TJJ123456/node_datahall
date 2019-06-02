@@ -2,7 +2,7 @@
   <div class="fillcontain">
     <headTop/>
     <div class="table_container">
-      <el-table v-loading="loading" :data="tableData" style="width: 100%">
+      <el-table border v-loading="loading" :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="分类名称"></el-table-column>
         <el-table-column prop="dataList.length" label="数据数量"></el-table-column>
         <el-table-column label="操作">

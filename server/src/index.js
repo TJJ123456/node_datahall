@@ -41,7 +41,7 @@ console.log(__dirname);
 app.use('/public', express.static(path.join(__dirname, '/public')));
 
 routes(app)
-
+//监听3000端口号
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 })

@@ -31,6 +31,24 @@
                 >{{item.name}}</el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="上传数据头像图片" prop="filepath">
+              <el-upload
+                class="avatar-uploader"
+                ref="upload"
+                action="http://localhost:3000/posts/img"
+                :before-upload="beforeUpAvatarload"
+                :on-success="uploadAvatarSuccess"
+                :limit="1"
+              >
+                <img
+                  v-if="ruleForm.imgpath"
+                  :src="'http://localhost:3000' + ruleForm.imgpath"
+                  class="avatar"
+                >
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过10m</div>
+              </el-upload>
+            </el-form-item>
             <el-form-item label="上传数据文件" prop="filepath">
               <el-upload
                 ref="upload"
@@ -77,6 +95,7 @@ export default {
         desc: "",
         genre: "",
         filepath: "",
+        imgpath: "",
         keyword: "",
         price: ""
       },
@@ -86,7 +105,8 @@ export default {
         genre: [{ required: true, message: "选择数据类型", trigger: "blur" }],
         price: [{ required: true, message: "输入价格", trigger: "blur" }],
         keyword: [{ required: true, message: "输入关键字", trigger: "blur" }],
-        filepath: [{ required: true, message: "请上传文件", trigger: "blur" }]
+        filepath: [{ required: true, message: "请上传文件", trigger: "blur" }],
+        imgpath: [{ required: true, message: "请上传文件", trigger: "blur" }],
       }
     };
   },
@@ -160,7 +180,7 @@ export default {
       } else {
         this.$message({
           showClose: true,
-          message: "创建种类成功",
+          message: "创建数据成功",
           type: "success"
         });
         this.resetForm("ruleForm");
@@ -211,6 +231,27 @@ export default {
     },
     submitUpload() {
       this.$refs.upload.submit();
+    },
+    beforeUpAvatarload(file) {
+      console.log(file.type);
+      const isJPGorPng =
+        file.type === "image/jpg" ||
+        file.type === "image/png" ||
+        file.type === "image/jpeg";
+      const isLt10M = file.size / 1024 / 1024 < 10;
+      if (!isJPGorPng) {
+        this.$message.error("上传图片只能是 JPG/jpeg/png 格式!");
+      }
+      if (!isLt10M) {
+        this.$message.error("上传图片大小不能超过 10MB!");
+      }
+      return isJPGorPng && isLt10M;
+
+      return false;
+    },
+    uploadAvatarSuccess(res, file) {
+      this.ruleForm.imgpath = res.filepath;
+      //   console.log(res, file);
     }
   }
 };
@@ -234,5 +275,28 @@ export default {
 .form_header {
   text-align: center;
   margin-bottom: 10px;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

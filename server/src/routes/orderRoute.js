@@ -5,7 +5,7 @@ const route = express.Router();
 async function getByname(name) {
     return await Orders.findOne({ name })
 }
-
+//新建订单
 route.post('/create', async (req, res, next) => {
     try {
         if (!req.session.user) {
@@ -35,7 +35,7 @@ route.post('/create', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//根据用户id请求该用户的订单数量
 route.get('/userlist', async (req, res, next) => {
     try {
         if (!req.session.user) {
@@ -62,7 +62,7 @@ route.get('/userlist', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//请求订单详细信息
 route.post('/order', async (req, res, next) => {
     const id = req.body.id;
     try {
@@ -74,7 +74,7 @@ route.post('/order', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//请求订单总数
 route.get('/count', async (req, res, next) => {
     try {
         let data = await Orders.count({});
@@ -86,10 +86,26 @@ route.get('/count', async (req, res, next) => {
     }
 
 })
-
+//请求订单列表
 route.get('/list', async (req, res, next) => {
     try {
         let data = await Orders.find({});
+        for (let i in data) {
+            if (data[i].userid !== '') {
+                let doc = await Users.findOne({ _id: data[i].userid });
+                if (doc) {
+                    data[i].username = doc.username;
+                } else {
+                    data[i].username = '用户不存在';
+                }
+            }
+            let datadoc = await Datas.findOne({ _id: data[i].dataid });
+            if (datadoc) {
+                data[i].dataname = datadoc.name;
+            } else {
+                data[i].dataname = '数据不存在';
+            }
+        }
         res.json({
             data: data
         });
@@ -97,7 +113,7 @@ route.get('/list', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//根据条件请求订单表
 route.post('/list', async (req, res, next) => {
     const limit = req.body.limit;
     const offset = req.body.offset;
@@ -119,29 +135,7 @@ route.post('/list', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
-route.post('/searchlist', async (req, res, next) => {
-    try {
-        const keyword = req.body.keyword;
-        let regex = new RegExp(keyword);
-        let data = await Orders.find({
-            $or: [
-                { "name": regex }, { "keyword": regex }
-            ]
-        });
-        console.log(keyword, data);
-        for (let i = 0; i < data.length; ++i) {
-            if (data[i].genre !== '') {
-                let doc = await Genres.findOne({ _id: data[i].genre });
-                data[i].genrename = doc.name;
-            }
-        }
-        res.json({ data: data });
-    } catch (e) {
-        res.status(405).send(e.message);
-    }
-})
-
+//删除订单列表
 route.post('/delete', async (req, res, next) => {
     const id = req.body.id;
     try {
@@ -151,7 +145,7 @@ route.post('/delete', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//根据id改变订单
 route.post('/change', async (req, res, next) => {
     const id = req.body._id;
     try {

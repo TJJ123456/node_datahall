@@ -10,13 +10,14 @@ module.exports = {
   },
   module: {
     rules: [
+      // {
+      //   test: /\.css$/,
+      //   use: [
+      //     'style-loader',
+      //     'css-loader'
+      //   ],
+      // },
       {
-        test: /\.css$/,
-        use: [
-          'vue-style-loader',
-          'css-loader'
-        ],
-      }, {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
@@ -48,7 +49,7 @@ module.exports = {
       }, {
         test: /\.less$/,
         use: [{
-          loader: "style-loader"
+          loader: "vue-style-loader"
         }, {
           loader: "css-loader"
         }, {
@@ -95,8 +96,8 @@ if (process.env.NODE_ENV === 'production') {
         warnings: false
       }
     }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
+    // new webpack.LoaderOptionsPlugin({
+    //   minimize: true
+    // })
   ])
 }

@@ -1,13 +1,13 @@
-import { Genres, Datas, downloadHead } from '../providers'
+import { Genres, Datas, downloadHead, Orders } from '../providers'
 import express from 'express'
 const route = express.Router();
 import fs from 'fs';
 import path from 'path';
-
+//检查是否有该名字数据
 async function getByname(name) {
     return await Datas.findOne({ name })
 }
-
+//新建数据
 route.post('/create', async (req, res, next) => {
     try {
         const food = await getByname(req.body.name);
@@ -31,7 +31,7 @@ route.post('/create', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//根据id请求数据细节
 route.post('/data', async (req, res, next) => {
     const id = req.body.id;
     try {
@@ -54,7 +54,7 @@ route.post('/data', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//请求数据数量
 route.get('/count', async (req, res, next) => {
     try {
         let data = await Datas.count({});
@@ -66,10 +66,20 @@ route.get('/count', async (req, res, next) => {
     }
 
 })
-
+//请求数据列表
 route.get('/list', async (req, res, next) => {
     try {
         let data = await Datas.find({});
+        for (let i = 0; i < data.length; ++i) {
+            if (data[i].genre !== '') {
+                let doc = await Genres.findOne({ _id: data[i].genre });
+                if (doc)
+                    data[i].genrename = doc.name;
+                else
+                    data[i].genrename = '无此类型';
+                data[i].ordercount = await Orders.count({ dataid: data[i]._id });
+            }
+        }
         res.json({
             data: data
         });
@@ -77,7 +87,7 @@ route.get('/list', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//根据条件请求数据列表
 route.post('/list', async (req, res, next) => {
     const limit = req.body.limit;
     const offset = req.body.offset;
@@ -96,7 +106,7 @@ route.post('/list', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//请求搜索结果列表
 route.post('/searchlist', async (req, res, next) => {
     try {
         const keyword = req.body.keyword;
@@ -117,7 +127,7 @@ route.post('/searchlist', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//删除数据
 route.post('/delete', async (req, res, next) => {
     const id = req.body.id;
     try {
@@ -127,7 +137,7 @@ route.post('/delete', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//更改数据
 route.post('/change', async (req, res, next) => {
     const id = req.body._id;
     try {
@@ -137,7 +147,7 @@ route.post('/change', async (req, res, next) => {
         res.status(405).send(e.message);
     }
 })
-
+//下载数据
 route.post('/download', async (req, res, next) => {
     const id = req.body.id;
     try {
